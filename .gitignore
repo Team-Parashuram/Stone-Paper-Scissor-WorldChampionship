@@ -1,0 +1,23 @@
+# Environment files
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+
+# Binary
+sps-server
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+vendor/
