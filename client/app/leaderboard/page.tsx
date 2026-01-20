@@ -20,7 +20,8 @@ export default function LeaderboardPage() {
     try {
       const offset = (page - 1) * ITEMS_PER_PAGE;
       const response = await leaderboardAPI.getLeaderboard(ITEMS_PER_PAGE, offset);
-      setPlayers(response.leaderboard || []);
+      const filteredPlayers = (response.leaderboard || []).filter(player => player.total_matches > 0);
+      setPlayers(filteredPlayers);
       setTotal(response.total);
     } catch (err) {
       setError('Failed to load leaderboard');

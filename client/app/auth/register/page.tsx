@@ -112,7 +112,7 @@ export default function RegisterPage() {
             <Image src="/scissor.png" alt="Scissors" width={40} height={40} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create Super Admin</h1>
-          <p className="text-gray-600 mt-2">Stone Paper Scissors Tournament - First Admin Setup</p>
+          <p className="text-gray-600 mt-2">ThrowDown Championship - First Admin Setup</p>
         </div>
 
         <Card>

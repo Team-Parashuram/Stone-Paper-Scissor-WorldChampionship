@@ -13,7 +13,7 @@ export default function Footer() {
               About
             </h3>
             <p className="text-sm text-gray-600">
-              Official Stone Paper Scissors World Championship tracker. Monitor player rankings,
+              ThrowDown - Official Stone Paper Scissors World Championship tracker. Monitor player rankings,
               match results, and ELO ratings in real-time.
             </p>
           </div>
@@ -67,7 +67,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500 text-center">
-            © {currentYear} Stone Paper Scissors Championship. All rights reserved.
+            © {currentYear} ThrowDown Championship. All rights reserved.
           </p>
         </div>
       </div>

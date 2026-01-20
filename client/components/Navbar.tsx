@@ -24,7 +24,7 @@ export default function Navbar() {
                 <Image src="/paper.png" alt="Paper" width={24} height={24} />
                 <Image src="/scissor.png" alt="Scissors" width={24} height={24} />
               </div>
-              <span className="font-bold text-lg text-gray-900">SPS Tracker</span>
+              <span className="font-bold text-lg text-gray-900">ThrowDown</span>
             </Link>
 
             {/* Public navigation */}

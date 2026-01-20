@@ -72,7 +72,7 @@ export default function LoginPage() {
             <Image src="/scissor.png" alt="Scissors" width={40} height={40} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
-          <p className="text-gray-600 mt-2">Stone Paper Scissors Tournament Manager</p>
+          <p className="text-gray-600 mt-2">ThrowDown Tournament Manager</p>
         </div>
 
         <Card>

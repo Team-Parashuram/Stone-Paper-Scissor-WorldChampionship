@@ -72,10 +72,10 @@ export default function Home() {
               />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-              Stone Paper Scissors
+              ThrowDown
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-2">
-              World Championship Tracker
+              Stone Paper Scissors Championship
             </p>
             <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto mb-8">
               Track matches, monitor ELO ratings, and follow player performance
@@ -112,19 +112,19 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="text-center">
-            <div className="text-4xl font-bold text-green-500 mb-2">
-              {topPlayers.length > 0 ? topPlayers[0]?.total_matches || 0 : 0}+
+            <div className="text-4xl font-bold text-blue-600 mb-2">
+              {totalMatches.toLocaleString()}
             </div>
             <p className="text-gray-600">Matches Played</p>
           </Card>
           <Card className="text-center">
-            <div className="text-4xl font-bold text-yellow-500 mb-2">
-              {topPlayers.length}+
+            <div className="text-4xl font-bold text-indigo-600 mb-2">
+              {totalPlayers.toLocaleString()}
             </div>
             <p className="text-gray-600">Active Players</p>
           </Card>
           <Card className="text-center">
-            <div className="text-4xl font-bold text-green-600 mb-2">
+            <div className="text-4xl font-bold text-gray-900 mb-2">
               {topPlayers.length > 0 ? Math.round(topPlayers[0]?.elo || 1000) : 1000}
             </div>
             <p className="text-gray-600">Highest ELO</p>
@@ -141,7 +141,7 @@ export default function Home() {
               <h2 className="text-xl font-bold text-gray-900">Top Players</h2>
               <Link
                 href="/leaderboard"
-                className="text-sm text-green-600 hover:text-green-700 font-medium"
+                className="text-sm text-gray-700 hover:text-gray-900 font-medium"
               >
                 View All →
               </Link>
@@ -153,7 +153,7 @@ export default function Home() {
               />
             ) : (
               <div className="space-y-4">
-                {topPlayers.map((player, index) => (
+                {topPlayers.filter(player => player.total_matches > 0).map((player, index) => (
                   <Link
                     key={player.id}
                     href={`/players/${player.id}`}

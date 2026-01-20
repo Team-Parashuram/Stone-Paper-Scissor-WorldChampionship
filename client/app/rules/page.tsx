@@ -25,10 +25,10 @@ export default function RulesPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Championship Rules
+            ThrowDown Rules
           </h1>
           <p className="text-lg text-gray-600">
-            Official rules and regulations for Stone Paper Scissors World Championship
+            Official rules and regulations for the ThrowDown Championship
           </p>
         </div>
 

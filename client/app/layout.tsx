@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import Navbar from "@/components/Navbar";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import {Analytics} from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,9 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SPS Tracker - Stone Paper Scissors Match & ELO Tracker",
+  title: "ThrowDown - Stone Paper Scissors Championship Tracker",
   description: "Track Stone Paper Scissors matches and player ELO ratings for the World Championship",
-  keywords: ["stone paper scissors", "elo rating", "match tracker", "championship"],
+  keywords: ["stone paper scissors", "elo rating", "match tracker", "championship", "throwdown"],
 };
 
 export default function RootLayout({
@@ -30,6 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Analytics />
+        <SpeedInsights />
         <AuthProvider>
           {/* <Navbar /> */}
           <main className="min-h-screen">
