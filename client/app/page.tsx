@@ -19,11 +19,13 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [playersRes, matchesRes, leaderboardRes] = await Promise.all([
-          leaderboardAPI.getTopPlayers(5),
+          leaderboardAPI.getTopPlayers(10), // Fetch more players to account for filtering
           matchAPI.getAllMatches(5, 0),
           leaderboardAPI.getLeaderboard(1, 0), // Get just to fetch totals
         ]);
-        setTopPlayers(playersRes.top_players || []);
+        // Filter players with matches and limit to top 5
+        const activePlayers = (playersRes.top_players || []).filter(p => p.total_matches > 0).slice(0, 5);
+        setTopPlayers(activePlayers);
         setRecentMatches(matchesRes.matches || []);
         setTotalPlayers(leaderboardRes.total || 0);
         setTotalMatches(matchesRes.total || 0);
@@ -153,7 +155,7 @@ export default function Home() {
               />
             ) : (
               <div className="space-y-4">
-                {topPlayers.filter(player => player.total_matches > 0).map((player, index) => (
+                {topPlayers.map((player, index) => (
                   <Link
                     key={player.id}
                     href={`/players/${player.id}`}
