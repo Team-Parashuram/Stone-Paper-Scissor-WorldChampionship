@@ -29,6 +29,8 @@ export default function AdminDashboard() {
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
   const [matchResult, setMatchResult] = useState<MatchResult | ''>('');
+  const [player1Score, setPlayer1Score] = useState('');
+  const [player2Score, setPlayer2Score] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [matchError, setMatchError] = useState<string | null>(null);
   const [matchSuccess, setMatchSuccess] = useState<string | null>(null);
@@ -127,7 +129,7 @@ export default function AdminDashboard() {
     setMatchError(null);
     setMatchSuccess(null);
 
-    if (!player1Id || !player2Id || !matchResult) {
+    if (!player1Id || !player2Id || !player1Score || !player2Score) {
       setMatchError('Please fill in all fields');
       setIsSubmitting(false);
       return;
@@ -139,32 +141,29 @@ export default function AdminDashboard() {
       return;
     }
 
-    // Convert result to scores
-    let player1Score = 0;
-    let player2Score = 0;
-    if (matchResult === 'player1') {
-      player1Score = 1;
-      player2Score = 0;
-    } else if (matchResult === 'player2') {
-      player1Score = 0;
-      player2Score = 1;
-    } else {
-      player1Score = 0;
-      player2Score = 0;
+    const p1Score = parseInt(player1Score);
+    const p2Score = parseInt(player2Score);
+
+    if (isNaN(p1Score) || isNaN(p2Score) || p1Score < 0 || p2Score < 0) {
+      setMatchError('Scores must be valid positive numbers');
+      setIsSubmitting(false);
+      return;
     }
 
     try {
       await matchAPI.createMatch({
         player1_id: parseInt(player1Id),
         player2_id: parseInt(player2Id),
-        player1_score: player1Score,
-        player2_score: player2Score,
+        player1_score: p1Score,
+        player2_score: p2Score,
       });
 
       setMatchSuccess('Match recorded successfully!');
       setPlayer1Id('');
       setPlayer2Id('');
       setMatchResult('');
+      setPlayer1Score('');
+      setPlayer2Score('');
       setPrediction(null);
       
       // Refresh data
@@ -349,16 +348,42 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* Match Result */}
+              {/* Match Scores */}
               <div className="p-4 bg-yellow-50 rounded-lg">
-                <h3 className="font-semibold text-gray-700 mb-3">Match Result</h3>
-                <Select
-                  label="Winner"
-                  options={resultOptions}
-                  value={matchResult}
-                  onChange={(e) => setMatchResult(e.target.value as MatchResult | '')}
-                  required
-                />
+                <h3 className="font-semibold text-gray-700 mb-3">Match Scores</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Player 1 Score
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={player1Score}
+                      onChange={(e) => setPlayer1Score(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="e.g. 10"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Player 2 Score
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={player2Score}
+                      onChange={(e) => setPlayer2Score(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="e.g. 8"
+                      required
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  💡 Score difference affects ELO changes - bigger wins earn more points!
+                </p>
               </div>
 
               {/* Prediction Display */}

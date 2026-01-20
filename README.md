@@ -1,159 +1,88 @@
-# Stone-Paper-Scissors World Championship API 🏆
+# ThrowDown - Stone Paper Scissors Championship Tracker 🏆
 
-A Go backend API using Fiber framework for managing a Stone-Paper-Scissors championship with an ELO rating system.
+A full-stack web application for managing competitive Stone Paper Scissors tournaments with professional ELO-based rankings, real-time match tracking, and comprehensive player statistics.
 
-## Features
+![Next.js](https://img.shields.io/badge/Next.js-16-black) ![Go](https://img.shields.io/badge/Go-1.21+-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4)
 
-- **ELO Rating System**: Chess-like ELO calculation with score-based adjustments
-- **Leaderboard**: Real-time rankings based on ELO ratings
-- **Match History**: Complete record of all matches with ELO changes
-- **Win Prediction**: Predict match outcomes based on player ratings
-- **SQLite Database**: Persistent storage for players and matches
+## 🎯 Overview
 
-## ELO Calculation
+ThrowDown is a professional championship tracking system that brings competitive integrity to Stone Paper Scissors. Built with Next.js 16 and Go Fiber, it features a chess-style ELO rating system, role-based authentication, and real-time statistics.
 
-The ELO system considers two factors:
+**Live Demo:** [Your deployment URL]
 
-1. **Win Ratio**: `winner_score / total_points` (e.g., 8/15 = 0.533 for a 7-8 game)
-2. **Point Difference**: `(winner_score - loser_score) / total_points` (e.g., 1/15 = 0.067)
+## ✨ Features
 
-This means:
-- Close games (7-8) result in smaller ELO changes
-- Dominant wins (10-2) result in larger ELO changes
-- Upsets (low ELO beats high ELO) yield bigger rewards
+### For Players & Spectators
+- 🏅 **Global Leaderboard** - Real-time rankings with ELO ratings
+- 📊 **Player Profiles** - Detailed stats, match history, and performance analytics
+- 📈 **Live Feed** - Recent match results with visual indicators
+- 🔍 **Player Search** - Find and track your favorite competitors
+- 📖 **Rules & Documentation** - Complete championship guidelines
 
-## Quick Start
+### For Administrators
+- 🎮 **Match Recording** - Create matches with automatic ELO calculation
+- 🔮 **Win Prediction** - AI-powered match outcome predictions based on ELO
+- 👥 **Player Management** - Create and manage player profiles
+- 🔐 **Role-Based Access** - Super Admin and Admin roles with permissions
+- 📝 **Match History** - View and manage all recorded matches
 
-```bash
-# Install dependencies
-go mod tidy
+### Technical Features
+- ⚡ **Chess-Style ELO System** - Dynamic K-factor based on player experience
+- 🎯 **Score Factor Calculation** - Match dominance affects rating changes
+- 🔄 **ELO Reversal** - Delete matches to revert rating changes
+- 🔒 **JWT Authentication** - Secure admin access with token-based auth
+- 📱 **Responsive Design** - Mobile-first, professional UI
 
-# Run the server
-go run main.go
-```
+## 🎮 How It Works
 
-Server starts at `http://localhost:3001`
+### ELO Rating System
 
-## API Endpoints
+ThrowDown uses a sophisticated ELO system adapted from chess:
 
-### Health Check
-```
-GET /api/v1/health
-```
+1. **Starting Rating**: All players begin at 1000 ELO
+2. **K-Factor** (Rating Volatility):
+   - New players (0-9 matches): K = 40 (high volatility)
+   - Intermediate (10-29 matches): K = 32
+   - Experienced (30+ matches): K = 16 (stable ratings)
 
-### Players
-```
-POST   /api/v1/players          # Create a new player
-GET    /api/v1/players          # Get all players
-GET    /api/v1/players/:id      # Get player by ID
-PUT    /api/v1/players/:id      # Update player name
-DELETE /api/v1/players/:id      # Delete player
-```
+3. **Score Factor** (Match Dominance):
+   - Close matches (60-70% win): Smaller ELO changes
+   - Dominant wins (80%+ win): Larger ELO changes
 
-### Matches
-```
-POST /api/v1/matches            # Submit match result
-GET  /api/v1/matches            # Get match history (optional: ?player_id=1&limit=50)
-GET  /api/v1/matches/:id        # Get match by ID
-```
+4. **Expected Score Formula**:
+   ```
+   E = 1 / (1 + 10^((OpponentElo - PlayerElo) / 400))
+   ```
 
-### Leaderboard
-```
-GET /api/v1/leaderboard              # Full leaderboard (pagination: ?limit=100&offset=0)
-GET /api/v1/leaderboard/top          # Top players (?n=10)
-GET /api/v1/leaderboard/rank/:id     # Get player's rank
-GET /api/v1/leaderboard/predict      # Predict match (?player1_id=1&player2_id=2)
-```
+### Authentication Flow
 
-## Example Usage
+- **Super Admin**: First admin account, can create other admins
+- **Admin**: Can record matches and manage players
+- **Public**: Read-only access to leaderboards and stats
 
-### Create Players
-```bash
-curl -X POST http://localhost:3001/api/v1/players \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Alice"}'
+## 🛠️ Tech Stack
 
-curl -X POST http://localhost:3001/api/v1/players \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Bob"}'
-```
+### Frontend
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS 4** - Styling
 
-### Submit a Match Result
-```bash
-# Alice (ID: 1) vs Bob (ID: 2) with score 8-7
-curl -X POST http://localhost:3001/api/v1/matches \
-  -H "Content-Type: application/json" \
-  -d '{"player1_id": 1, "player2_id": 2, "player1_score": 8, "player2_score": 7}'
-```
-
-Response:
-```json
-{
-  "message": "Match recorded successfully",
-  "match": {
-    "id": 1,
-    "player1_name": "Alice",
-    "player2_name": "Bob",
-    "player1_score": 8,
-    "player2_score": 7,
-    "winner_name": "Alice",
-    "player1_elo_change": 17.23,
-    "player2_elo_change": -17.23,
-    "player1_elo_before": 1000,
-    "player2_elo_before": 1000,
-    "player1_elo_after": 1017.23,
-    "player2_elo_after": 982.77
-  }
-}
-```
-
-### Get Leaderboard
-```bash
-curl http://localhost:3001/api/v1/leaderboard
-```
-
-### Predict Match Outcome
-```bash
-curl "http://localhost:3001/api/v1/leaderboard/predict?player1_id=1&player2_id=2"
-```
-
-## Project Structure
-
-```
-├── main.go                 # Application entry point
-├── go.mod                  # Go module file
-├── config/
-│   └── database.go         # Database configuration
-├── models/
-│   ├── player.go           # Player model
-│   └── match.go            # Match model
-├── handlers/
-│   ├── player.go           # Player handlers
-│   ├── match.go            # Match handlers
-│   └── leaderboard.go      # Leaderboard handlers
-├── services/
-│   └── elo.go              # ELO calculation service
-├── routes/
-│   └── routes.go           # API routes
-└── sps_championship.db     # SQLite database (auto-created)
-```
-
-## ELO Constants
-
-| Constant | Value | Description |
-|----------|-------|-------------|
-| Base K   | 32    | Standard K-factor |
-| Min K    | 16    | K-factor for experienced players (30+ matches) |
-| Max K    | 40    | K-factor for new players (<10 matches) |
-| Starting ELO | 1000 | Initial rating for new players |
-
-## Tech Stack
-
-- **Go 1.21+**
+### Backend
+- **Go 1.21+** - Backend language
 - **Fiber v2** - Web framework
-- **GORM** - ORM
-- **SQLite** - Database
+- **GORM** - ORM for database operations
+- **PostgreSQL** - Production database
+- **JWT** - Authentication
 
-## License
+## 📝 License
 
-MIT
+MIT License - see LICENSE file for details
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
