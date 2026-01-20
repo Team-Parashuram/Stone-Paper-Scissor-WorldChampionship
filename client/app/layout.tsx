@@ -35,7 +35,6 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <AuthProvider>
-          {/* <Navbar /> */}
           <main className="min-h-screen">
             {children}
           </main>

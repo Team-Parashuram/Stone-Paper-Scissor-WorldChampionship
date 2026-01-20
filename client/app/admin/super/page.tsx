@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { adminAPI, playerAPI, matchAPI } from '@/lib/api';
 import { Admin, Player } from '@/lib/types';
@@ -174,175 +175,231 @@ export default function SuperAdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 font-sans selection:bg-indigo-500 selection:text-white">
+      
+      {/* Background Ambience */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-100/40 rounded-full mix-blend-multiply blur-3xl opacity-50" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-100/40 rounded-full mix-blend-multiply blur-3xl opacity-50" />
+      </div>
+
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">
-            Welcome back, <span className="font-semibold">{admin?.username}</span>
-            <span className="ml-2 px-2 py-0.5 bg-gray-900 text-white text-xs rounded-full">
-              Super Admin
-            </span>
-          </p>
+        <div className="mb-10">
+          <Link
+            href="/"
+            className="group inline-flex items-center text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-6"
+          >
+            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center mr-2 group-hover:border-indigo-200 group-hover:bg-indigo-50 transition-all">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </div>
+            Back to Arena
+          </Link>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+                Super Admin Dashboard
+              </h1>
+              <p className="text-lg text-slate-500 mt-2">
+                Welcome back, <span className="font-bold text-slate-900">{admin?.username}</span>
+                <span className="ml-2 px-2.5 py-1 bg-amber-500 text-white text-xs rounded-lg font-semibold shadow-sm">
+                  Super Admin
+                </span>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-          <StatCard
-            title="Total Admins"
-            value={admins.length}
-            icon="👤"
-          />
-          <StatCard
-            title="Total Players"
-            value={players.length}
-            icon="👥"
-          />
-          <StatCard
-            title="Total Matches"
-            value={totalMatches}
-            icon="🎮"
-          />
-          <StatCard
-            title="System Status"
-            value="Active"
-            icon="✅"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-10">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Admins</p>
+                <p className="text-3xl font-black text-slate-900">{admins.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center text-2xl">👤</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Players</p>
+                <p className="text-3xl font-black text-slate-900">{players.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl">👥</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Matches</p>
+                <p className="text-3xl font-black text-slate-900">{totalMatches}</p>
+              </div>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl">🎮</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">System Status</p>
+                <p className="text-3xl font-black text-emerald-600">Active</p>
+              </div>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl">✅</div>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Admin Management */}
-          <Card>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Admin Management</h2>
-              <Button
-                size="sm"
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white">
+              <h2 className="text-lg font-bold text-slate-900">Admin Management</h2>
+              <button
                 onClick={() => setCreateAdminModalOpen(true)}
+                className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition-colors"
               >
                 + Add Admin
-              </Button>
+              </button>
             </div>
 
-            {adminsLoading ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : admins.length === 0 ? (
-              <EmptyState
-                title="No admins yet"
-                description="Create your first admin account"
-                icon="👤"
-              />
-            ) : (
-              <div className="space-y-3">
-                {admins.map((adminUser) => (
-                  <div
-                    key={adminUser.id}
-                    className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">
-                            {adminUser.username}
-                          </span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            adminUser.role === 'super_admin'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
-                            {adminUser.role === 'super_admin' ? 'Super Admin' : 'Admin'}
-                          </span>
+            <div className="p-6">
+              {adminsLoading ? (
+                <div className="flex justify-center py-12">
+                  <LoadingSpinner />
+                </div>
+              ) : admins.length === 0 ? (
+                <div className="py-12">
+                  <EmptyState
+                    title="No admins yet"
+                    description="Create your first admin account"
+                  />
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {admins.map((adminUser) => (
+                    <div
+                      key={adminUser.id}
+                      className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-300 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-900">
+                              {adminUser.username}
+                            </span>
+                            <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${
+                              adminUser.role === 'super_admin'
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-emerald-100 text-emerald-700'
+                            }`}>
+                              {adminUser.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-500 mt-1">{adminUser.email}</p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            Created: {new Date(adminUser.created_at).toLocaleDateString()}
+                          </p>
                         </div>
-                        <p className="text-sm text-gray-500">{adminUser.email}</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Created: {new Date(adminUser.created_at).toLocaleDateString()}
-                        </p>
+                        {adminUser.role !== 'super_admin' && (
+                          <button
+                            onClick={() => {
+                              setAdminToDelete(adminUser);
+                              setDeleteAdminModalOpen(true);
+                            }}
+                            className="p-2.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                            title="Delete admin"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
-                      {adminUser.role !== 'super_admin' && (
-                        <button
-                          onClick={() => {
-                            setAdminToDelete(adminUser);
-                            setDeleteAdminModalOpen(true);
-                          }}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete admin"
-                        >
-                          🗑️
-                        </button>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Player Management */}
-          <Card>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Player Management</h2>
-              <span className="text-sm text-gray-500">{players.length} players</span>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white">
+              <h2 className="text-lg font-bold text-slate-900">Player Management</h2>
+              <span className="text-sm font-medium text-slate-500">{players.length} players</span>
             </div>
 
-            {playersLoading ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : players.length === 0 ? (
-              <EmptyState
-                title="No players yet"
-                description="Players will appear here once created"
-                icon="👥"
-              />
-            ) : (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {players.map((player) => (
-                  <div
-                    key={player.id}
-                    className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                          <span className="text-blue-700 font-bold text-sm">
-                            {player.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900 text-sm">{player.name}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span>ELO: {player.elo}</span>
-                            <span>•</span>
-                            <span>{player.wins}W {player.losses}L {player.draws}D</span>
+            <div className="p-6">
+              {playersLoading ? (
+                <div className="flex justify-center py-12">
+                  <LoadingSpinner />
+                </div>
+              ) : players.length === 0 ? (
+                <div className="py-12">
+                  <EmptyState
+                    title="No players yet"
+                    description="Players will appear here once created"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {players.map((player) => (
+                      <div
+                        key={player.id}
+                        className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-300 hover:shadow-sm transition-all"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                              <span className="text-indigo-700 font-bold text-base">
+                                {player.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-900 text-sm">{player.name}</p>
+                              <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
+                                <span className="font-mono font-semibold">ELO: {Math.round(player.elo)}</span>
+                                <span className="text-slate-300">•</span>
+                                <span>{player.wins}W {player.losses}L {player.draws}D</span>
+                              </div>
+                            </div>
                           </div>
+                          <button
+                            onClick={() => {
+                              setPlayerToDelete(player);
+                              setDeletePlayerModalOpen(true);
+                            }}
+                            className="p-2.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                            title="Delete player (cascade)"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
-                      <button
-                        onClick={() => {
-                          setPlayerToDelete(player);
-                          setDeletePlayerModalOpen(true);
-                        }}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete player (cascade)"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
 
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-xs text-blue-800">
-                ⚠️ <strong>Warning:</strong> Deleting a player will also delete all their match history.
-              </p>
+                  <div className="mt-6 p-4 bg-rose-50 border border-rose-200 rounded-xl">
+                    <p className="text-xs text-rose-700 font-medium flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <strong>Warning:</strong> Deleting a player will also delete all their match history.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
-          </Card>
+          </div>
         </div>
       </main>
 
