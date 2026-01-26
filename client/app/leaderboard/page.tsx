@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { leaderboardAPI } from '@/lib/api';
 import { LeaderboardEntry } from '@/lib/types';
-import { Card, PageLoader, EmptyState, Pagination } from '@/components';
+import { Card, LoadingSpinner, EmptyState, Pagination } from '@/components';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -36,10 +36,6 @@ export default function LeaderboardPage() {
   }, [currentPage]);
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
-
-  if (isLoading && players.length === 0) {
-    return <PageLoader />;
-  }
 
   // Helper for rank badge styling
   const getRankBadgeStyle = (rank: number) => {
@@ -97,7 +93,11 @@ export default function LeaderboardPage() {
 
         {/* Leaderboard Card */}
         <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-          {players.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center p-20">
+              <LoadingSpinner />
+            </div>
+          ) : players.length === 0 ? (
             <div className="p-12">
               <EmptyState
                 title="No Rankings Yet"

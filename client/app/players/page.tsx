@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { playerAPI } from '@/lib/api';
 import { Player } from '@/lib/types';
-import { Card, Input, PageLoader, EmptyState } from '@/components';
+import { Card, Input, LoadingSpinner, EmptyState } from '@/components';
 
 function PlayersContent() {
   const searchParams = useSearchParams();
@@ -133,8 +133,8 @@ function PlayersContent() {
         {/* Results Area */}
         <div className="space-y-6">
           {isLoading ? (
-            <div className="py-12">
-               <PageLoader />
+            <div className="py-12 flex items-center justify-center">
+               <LoadingSpinner />
             </div>
           ) : hasSearched && players.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12">

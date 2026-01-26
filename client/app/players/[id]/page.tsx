@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { playerAPI } from '@/lib/api';
 import { Player, PlayerMatchHistory } from '@/lib/types';
-import { PageLoader, EmptyState, Pagination, Footer, Modal } from '@/components';
+import { LoadingSpinner, EmptyState, Pagination, Footer, Modal } from '@/components';
 import { useAuth } from '@/lib/auth-context';
 
 const ITEMS_PER_PAGE = 10;
@@ -20,19 +20,23 @@ export default function PlayerDetailPage() {
   const [matches, setMatches] = useState<PlayerMatchHistory[]>([]);
   const [totalMatches, setTotalMatches] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPlayer, setIsLoadingPlayer] = useState(true);
+  const [isLoadingMatches, setIsLoadingMatches] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchPlayerData = async () => {
+      setIsLoadingPlayer(true);
       try {
         const playerData = await playerAPI.getPlayer(playerId);
         setPlayer(playerData);
       } catch (err) {
         setError('Player not found');
         console.error(err);
+      } finally {
+        setIsLoadingPlayer(false);
       }
     };
 
@@ -45,7 +49,7 @@ export default function PlayerDetailPage() {
     const fetchMatches = async () => {
       if (!playerId) return;
       
-      setIsLoading(true);
+      setIsLoadingMatches(true);
       try {
         const offset = (currentPage - 1) * ITEMS_PER_PAGE;
         const response = await playerAPI.getPlayerMatches(playerId, ITEMS_PER_PAGE, offset);
@@ -54,7 +58,7 @@ export default function PlayerDetailPage() {
       } catch (err) {
         console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsLoadingMatches(false);
       }
     };
 
@@ -85,8 +89,12 @@ export default function PlayerDetailPage() {
     return 'bg-white text-slate-600 shadow-slate-100 ring-slate-100';
   };
 
-  if (!player && isLoading) {
-    return <PageLoader />;
+  if (!player && isLoadingPlayer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   if (error || !player) {
@@ -274,9 +282,9 @@ export default function PlayerDetailPage() {
             </span>
           </div>
 
-          {isLoading && matches.length === 0 ? (
-            <div className="p-12">
-               <PageLoader />
+          {isLoadingMatches ? (
+            <div className="p-12 flex items-center justify-center">
+               <LoadingSpinner />
             </div>
           ) : matches.length === 0 ? (
             <div className="p-12">

@@ -86,24 +86,28 @@ func GetChampionshipHistory(limit int) ([]models.ChampionshipReign, error) {
 func GetChampionStats() ([]models.ChampionStats, error) {
 	var stats []models.ChampionStats
 
-	// PostgreSQL-compatible query
+	// Use DATE_PART instead of EXTRACT for better PostgreSQL compatibility
 	query := `
 		SELECT 
 			p.id as player_id,
 			p.name as player_name,
 			COUNT(cr.id) as total_reigns,
-			SUM(
-				CASE 
-					WHEN cr.ended_at IS NULL THEN EXTRACT(DAY FROM (NOW() - cr.started_at))::INTEGER
-					ELSE EXTRACT(DAY FROM (cr.ended_at - cr.started_at))::INTEGER
-				END
-			) as total_days,
-			MAX(
-				CASE 
-					WHEN cr.ended_at IS NULL THEN EXTRACT(DAY FROM (NOW() - cr.started_at))::INTEGER
-					ELSE EXTRACT(DAY FROM (cr.ended_at - cr.started_at))::INTEGER
-				END
-			) as longest_reign_days,
+			COALESCE(SUM(
+				DATE_PART('day', 
+					CASE 
+						WHEN cr.ended_at IS NULL THEN NOW() - cr.started_at
+						ELSE cr.ended_at - cr.started_at
+					END
+				)::INTEGER
+			), 0) as total_days,
+			COALESCE(MAX(
+				DATE_PART('day', 
+					CASE 
+						WHEN cr.ended_at IS NULL THEN NOW() - cr.started_at
+						ELSE cr.ended_at - cr.started_at
+					END
+				)::INTEGER
+			), 0) as longest_reign_days,
 			MAX(CASE WHEN cr.ended_at IS NULL THEN 1 ELSE 0 END) as current_champion,
 			MIN(cr.started_at) as first_crowned,
 			MAX(CASE WHEN cr.ended_at IS NOT NULL THEN cr.started_at END) as last_crowned

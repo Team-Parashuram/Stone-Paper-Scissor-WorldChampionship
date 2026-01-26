@@ -31,12 +31,12 @@ func (c *ChampionshipReign) CalculateDays() int {
 
 // ChampionStats represents aggregated championship statistics for a player
 type ChampionStats struct {
-	PlayerID      uint    `json:"player_id"`
-	PlayerName    string  `json:"player_name"`
-	TotalReigns   int     `json:"total_reigns"`
-	TotalDays     int     `json:"total_days"`
-	LongestReign  int     `json:"longest_reign_days"`
-	CurrentChamp  bool    `json:"current_champion"`
-	FirstCrowned  time.Time `json:"first_crowned"`
-	LastCrowned   *time.Time `json:"last_crowned,omitempty"`
+	PlayerID        uint       `json:"player_id"`
+	PlayerName      string     `json:"player_name"`
+	TotalReigns     int        `json:"total_reigns"`
+	TotalDays       int        `json:"total_days"`
+	LongestReignDays int       `json:"longest_reign_days"`
+	CurrentChamp    bool       `json:"current_champion"`
+	FirstCrowned    time.Time  `json:"first_crowned"`
+	LastCrowned     *time.Time `json:"last_crowned,omitempty"`
 }

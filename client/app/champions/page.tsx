@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { championshipAPI } from '@/lib/api';
 import { ChampionStats, ChampionshipReign } from '@/lib/types';
-import { PageLoader, EmptyState } from '@/components';
+import { LoadingSpinner, EmptyState } from '@/components';
 
 export default function ChampionsPage() {
   const [champions, setChampions] = useState<ChampionStats[]>([]);
   const [currentChampion, setCurrentChampion] = useState<ChampionshipReign | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingChampions, setIsLoadingChampions] = useState(true);
+  const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,22 +18,25 @@ export default function ChampionsPage() {
   }, []);
 
   const loadChampionData = async () => {
-    setIsLoading(true);
-    try {
-      const [statsData, currentData] = await Promise.all([
-        championshipAPI.getStats(),
-        championshipAPI.getCurrentChampion().catch(() => null),
-      ]);
+    // Load independently for faster initial render
+    setIsLoadingChampions(true);
+    setIsLoadingCurrent(true);
+    
+    championshipAPI.getStats()
+      .then(statsData => {
+        setChampions(statsData.champions || []);
+        setError(null);
+      })
+      .catch(err => {
+        setError('Failed to load championship data');
+        console.error(err);
+      })
+      .finally(() => setIsLoadingChampions(false));
 
-      setChampions(statsData.champions || []);
-      setCurrentChampion(currentData);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load championship data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+    championshipAPI.getCurrentChampion()
+      .then(currentData => setCurrentChampion(currentData))
+      .catch(() => setCurrentChampion(null))
+      .finally(() => setIsLoadingCurrent(false));
   };
 
   const formatDate = (dateString: string) => {
@@ -46,10 +50,6 @@ export default function ChampionsPage() {
 
   // Identify the All-Time Greatest (First in the list, as list is sorted by total days)
   const allTimeLegend = champions.length > 0 ? champions[0] : null;
-
-  if (isLoading) {
-    return <PageLoader />;
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-indigo-500 selection:text-white pb-20">
@@ -99,7 +99,11 @@ export default function ChampionsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
             
             {/* 1. Current Champion Card (Amber Theme) */}
-            {currentChampion && (
+            {isLoadingCurrent ? (
+              <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex items-center justify-center min-h-[280px]">
+                <LoadingSpinner />
+              </div>
+            ) : currentChampion ? (
                 <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200 shadow-xl shadow-amber-100/50 flex flex-col justify-between overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-200/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                     
@@ -131,10 +135,14 @@ export default function ChampionsPage() {
                         </div>
                     </div>
                 </div>
-            )}
+            ) : null}
 
             {/* 2. All-Time Legend Card (Dark Slate Theme) - SPECIAL HIGHLIGHT */}
-            {allTimeLegend && (
+            {isLoadingChampions ? (
+              <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex items-center justify-center min-h-[280px]">
+                <LoadingSpinner />
+              </div>
+            ) : allTimeLegend ? (
                 <div className="relative bg-slate-900 rounded-3xl p-8 border border-slate-700 shadow-2xl flex flex-col justify-between overflow-hidden group text-white">
                     {/* Abstract texture */}
                     <div className="absolute inset-0 opacity-20">
@@ -170,11 +178,15 @@ export default function ChampionsPage() {
                         </div>
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
 
         {/* Champions List */}
-        {error ? (
+        {isLoadingChampions ? (
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-12 flex items-center justify-center min-h-[400px]">
+            <LoadingSpinner />
+          </div>
+        ) : error ? (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
             <p className="text-red-600 font-medium">{error}</p>
           </div>
