@@ -6,11 +6,11 @@ import (
 
 const (
 	// BaseK is the base K-factor for ELO calculations (like in chess)
-	BaseK = 32.0
-	// MinK is the minimum K-factor
-	MinK = 16.0
+	BaseK = 34.0
+	// MinK is the minimum K-factor - increased to keep experienced players engaged
+	MinK = 30.0
 	// MaxK is the maximum K-factor for newer players
-	MaxK = 40.0
+	MaxK = 42.0
 )
 
 // EloResult contains the result of an ELO calculation
@@ -54,13 +54,14 @@ func CalculateScoreFactor(winnerScore, loserScore int) float64 {
 
 // GetKFactor returns an appropriate K-factor based on player's total matches
 // Newer players have higher K-factors for faster rating adjustment
+// Experienced players maintain higher K-factor (28) to stay engaged
 func GetKFactor(totalMatches int) float64 {
 	if totalMatches < 10 {
-		return MaxK
+		return MaxK // 40 for new players
 	} else if totalMatches < 30 {
-		return BaseK
+		return BaseK // 32 for regular players
 	}
-	return MinK
+	return MinK // 28 for experienced players (was 16, now increased)
 }
 
 // CalculateElo calculates new ELO ratings for both players after a match
