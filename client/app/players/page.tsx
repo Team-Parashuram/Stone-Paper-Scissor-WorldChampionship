@@ -2,16 +2,28 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { playerAPI } from '@/lib/api';
 import { Player } from '@/lib/types';
 import { Card, Input, PageLoader, EmptyState } from '@/components';
 
 export default function PlayersPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
+  // Check if redirected after deletion
+  useEffect(() => {
+    if (searchParams.get('deleted') === 'true') {
+      setShowSuccessAlert(true);
+      // Auto-hide after 5 seconds
+      setTimeout(() => setShowSuccessAlert(false), 5000);
+    }
+  }, [searchParams]);
 
   // Debounced search
   const searchPlayers = useCallback(async (query: string) => {
@@ -209,6 +221,31 @@ export default function PlayersPage() {
           )}
         </div>
       </div>
+
+      {/* Success Alert */}
+      {showSuccessAlert && (
+        <div className="fixed bottom-4 right-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4 shadow-lg max-w-md z-50 animate-in slide-in-from-bottom">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h4 className="font-bold text-emerald-900 mb-1">Player Deleted</h4>
+              <p className="text-sm text-emerald-700">The player has been successfully removed from the championship.</p>
+            </div>
+            <button
+              onClick={() => setShowSuccessAlert(false)}
+              className="text-emerald-400 hover:text-emerald-600 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
