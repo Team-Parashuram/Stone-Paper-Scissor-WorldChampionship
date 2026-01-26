@@ -5,43 +5,62 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { leaderboardAPI, matchAPI } from '@/lib/api';
 import { LeaderboardEntry, Match } from '@/lib/types';
-import { Card, PageLoader, EmptyState } from '@/components';
+import { Card, PageLoader, EmptyState, LoadingSpinner } from '@/components';
 
 export default function Home() {
   const [topPlayers, setTopPlayers] = useState<LeaderboardEntry[]>([]);
   const [recentMatches, setRecentMatches] = useState<Match[]>([]);
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [totalMatches, setTotalMatches] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true);
+  const [isLoadingMatches, setIsLoadingMatches] = useState(true);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Load players
+    const fetchPlayers = async () => {
       try {
-        const [playersRes, matchesRes, leaderboardRes] = await Promise.all([
-          leaderboardAPI.getTopPlayers(10),
-          matchAPI.getAllMatches(3, 0),
-          leaderboardAPI.getLeaderboard(1, 0),
-        ]);
+        const playersRes = await leaderboardAPI.getTopPlayers(10);
         const activePlayers = (playersRes.top_players || []).filter(p => p.total_matches > 0).slice(0, 5);
         setTopPlayers(activePlayers);
-        setRecentMatches(matchesRes.matches || []);
-        setTotalPlayers(leaderboardRes.total || 0);
-        setTotalMatches(matchesRes.total || 0);
       } catch (err) {
-        setError('Failed to load data');
-        console.error(err);
+        console.error('Failed to load players:', err);
       } finally {
-        setIsLoading(false);
+        setIsLoadingPlayers(false);
       }
     };
 
-    fetchData();
-  }, []);
+    // Load matches
+    const fetchMatches = async () => {
+      try {
+        const matchesRes = await matchAPI.getAllMatches(3, 0);
+        setRecentMatches(matchesRes.matches || []);
+        setTotalMatches(matchesRes.total || 0);
+      } catch (err) {
+        console.error('Failed to load matches:', err);
+      } finally {
+        setIsLoadingMatches(false);
+      }
+    };
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
+    // Load stats
+    const fetchStats = async () => {
+      try {
+        const leaderboardRes = await leaderboardAPI.getLeaderboard(1, 0);
+        setTotalPlayers(leaderboardRes.total || 0);
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    // Fetch all in parallel but update independently
+    fetchPlayers();
+    fetchMatches();
+    fetchStats();
+  }, []);
 
   // Helper to determine podium styles - kept professional/subtle
   const getRankStyles = (index: number) => {
@@ -136,17 +155,29 @@ export default function Home() {
         <div className="bg-white rounded-xl shadow-xl shadow-slate-200/50 border border-slate-100 p-1 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
           <div className="p-6 text-center hover:bg-slate-50/30 transition-colors">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Total Matches</p>
-            <div className="text-3xl font-black text-slate-900">{totalMatches.toLocaleString()}</div>
+            {isLoadingMatches ? (
+              <div className="flex justify-center"><LoadingSpinner size="sm" /></div>
+            ) : (
+              <div className="text-3xl font-black text-slate-900">{totalMatches.toLocaleString()}</div>
+            )}
           </div>
           <div className="p-6 text-center hover:bg-slate-50/30 transition-colors">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Active Fighters</p>
-            <div className="text-3xl font-black text-slate-900">{totalPlayers.toLocaleString()}</div>
+            {isLoadingStats ? (
+              <div className="flex justify-center"><LoadingSpinner size="sm" /></div>
+            ) : (
+              <div className="text-3xl font-black text-slate-900">{totalPlayers.toLocaleString()}</div>
+            )}
           </div>
           <div className="p-6 text-center hover:bg-slate-50/30 transition-colors">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Highest Rating</p>
-            <div className="text-3xl font-black text-indigo-600">
-              {topPlayers.length > 0 ? Math.round(topPlayers[0]?.elo || 1000) : 1000}
-            </div>
+            {isLoadingPlayers ? (
+              <div className="flex justify-center"><LoadingSpinner size="sm" /></div>
+            ) : (
+              <div className="text-3xl font-black text-indigo-600">
+                {topPlayers.length > 0 ? Math.round(topPlayers[0]?.elo || 1000) : 1000}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -168,7 +199,11 @@ export default function Home() {
               </div>
 
               <div className="p-4 bg-slate-50/30 min-h-[400px]">
-                {topPlayers.length === 0 ? (
+                {isLoadingPlayers ? (
+                  <div className="flex items-center justify-center h-[400px]">
+                    <LoadingSpinner />
+                  </div>
+                ) : topPlayers.length === 0 ? (
                   <EmptyState title="No players yet" description="Be the first to join the arena!" />
                 ) : (
                   <div className="space-y-2">
@@ -249,7 +284,11 @@ export default function Home() {
               </div>
               
               <div className="p-4 bg-slate-50/30 flex-1">
-                {recentMatches.length === 0 ? (
+                {isLoadingMatches ? (
+                  <div className="flex items-center justify-center h-[400px]">
+                    <LoadingSpinner />
+                  </div>
+                ) : recentMatches.length === 0 ? (
                   <EmptyState title="Quiet Arena" description="Waiting for the first throw down." />
                 ) : (
                   <div className="space-y-3">
