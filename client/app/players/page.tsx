@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { playerAPI } from '@/lib/api';
 import { Player } from '@/lib/types';
 import { Card, Input, PageLoader, EmptyState } from '@/components';
 
-export default function PlayersPage() {
+function PlayersContent() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -247,5 +247,13 @@ export default function PlayersPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PlayersPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <PlayersContent />
+    </Suspense>
   );
 }
