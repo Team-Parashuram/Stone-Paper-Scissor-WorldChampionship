@@ -46,10 +46,10 @@ func CalculateScoreFactor(winnerScore, loserScore int) float64 {
 	// Combined factor:
 	// - A close game (7-8) gives a smaller bonus
 	// - A dominant win (10-2) gives a larger bonus
-	// Scale factor between 0.8 and 1.5 based on dominance
-	scoreFactor := 0.8 + (winRatio * 0.4) + (pointDiffRatio * 0.6)
+	// Scale factor between 0.9 and 1.3 based on dominance (reduced range for better balance)
+	scoreFactor := 0.9 + (winRatio * 0.2) + (pointDiffRatio * 0.3)
 
-	return math.Min(1.5, math.Max(0.8, scoreFactor))
+	return math.Min(1.3, math.Max(0.9, scoreFactor))
 }
 
 // GetKFactor returns an appropriate K-factor based on player's total matches
