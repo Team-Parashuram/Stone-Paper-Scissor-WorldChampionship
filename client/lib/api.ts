@@ -18,6 +18,10 @@ import {
   TopPlayersResponse,
   PlayerRankResponse,
   PredictMatchResponse,
+  ChampionshipReign,
+  ChampionStats,
+  ChampionshipHistoryResponse,
+  ChampionStatsResponse,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api/v1';
@@ -213,8 +217,8 @@ export const leaderboardAPI = {
   },
 
   // Get top players
-  getTopPlayers: async (n = 10): Promise<TopPlayersResponse> => {
-    return fetchAPI(`/leaderboard/top?n=${n}`);
+  getTopPlayers: async (limit = 10): Promise<TopPlayersResponse> => {
+    return fetchAPI(`/leaderboard/top?n=${limit}`);
   },
 
   // Get player rank
@@ -225,6 +229,29 @@ export const leaderboardAPI = {
   // Predict match outcome
   predictMatch: async (player1Id: number, player2Id: number): Promise<PredictMatchResponse> => {
     return fetchAPI(`/leaderboard/predict?player1_id=${player1Id}&player2_id=${player2Id}`);
+  },
+};
+
+// Championship API
+export const championshipAPI = {
+  // Get current champion
+  getCurrentChampion: async (): Promise<ChampionshipReign> => {
+    return fetchAPI('/championships/current');
+  },
+
+  // Get championship history
+  getHistory: async (limit = 50): Promise<ChampionshipHistoryResponse> => {
+    return fetchAPI(`/championships/history?limit=${limit}`);
+  },
+
+  // Get champion stats (Hall of Fame)
+  getStats: async (): Promise<ChampionStatsResponse> => {
+    return fetchAPI('/championships/stats');
+  },
+
+  // Get player's championship history
+  getPlayerHistory: async (playerId: number): Promise<ChampionshipHistoryResponse> => {
+    return fetchAPI(`/championships/player/${playerId}`);
   },
 };
 

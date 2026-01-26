@@ -156,6 +156,23 @@ return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 
 tx.Commit()
 
+// Track championship changes after successful match
+// Get current leaderboard to check for championship changes
+var topPlayer models.Player
+if err := config.DB.Order("elo DESC").First(&topPlayer).Error; err == nil {
+// Get previous champion if exists
+prevChamp, _ := services.GetCurrentChampion()
+var oldChampID *uint
+if prevChamp != nil {
+oldChampID = &prevChamp.PlayerID
+}
+
+// If there's a new champion, track the change
+if oldChampID == nil || *oldChampID != topPlayer.ID {
+services.TrackChampionshipChange(topPlayer.ID, oldChampID)
+}
+}
+
 // Prepare response
 winnerName := ""
 if winnerID != nil {

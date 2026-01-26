@@ -109,6 +109,12 @@ export default function Home() {
               View Standings
             </Link>
             <Link
+              href="/champions"
+              className="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold rounded-lg shadow-lg hover:from-amber-600 hover:to-yellow-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 text-sm tracking-wide"
+            >
+              🏆 Hall of Champions
+            </Link>
+            <Link
               href="/players"
               className="px-8 py-3.5 bg-white text-slate-700 font-bold border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 text-sm tracking-wide"
             >
@@ -190,11 +196,34 @@ export default function Home() {
                         </div>
 
                         <div className="text-right">
-                          <div className="bg-white/50 px-2 py-1 rounded-md border border-black/5">
-                            <span className="text-base font-black text-slate-700">
-                                {Math.round(player.elo)}
-                            </span>
-                          </div>
+                          {player.total_matches <= 5 ? (
+                            <div className="relative group/rating">
+                              <div className="bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                                <span className="text-base font-black text-amber-700">
+                                  {Math.round(player.elo)}
+                                </span>
+                                <span className="text-[10px] font-bold text-amber-600 ml-1">?</span>
+                              </div>
+                              <div className="absolute right-0 top-full mt-1 hidden group-hover/rating:block z-10 w-32">
+                                <div className="bg-slate-900 text-white text-xs py-1 px-2 rounded shadow-lg">
+                                  Provisional Rating
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="relative group/rating">
+                              <div className="bg-white/50 px-2 py-1 rounded-md border border-black/5">
+                                <span className="text-base font-black text-slate-700">
+                                  {Math.round(player.elo)}
+                                </span>
+                              </div>
+                              <div className="absolute right-0 top-full mt-1 hidden group-hover/rating:block z-10 w-28">
+                                <div className="bg-slate-900 text-white text-xs py-1 px-2 rounded shadow-lg">
+                                  Established
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </Link>
                     ))}

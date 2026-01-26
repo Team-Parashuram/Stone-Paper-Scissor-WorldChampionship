@@ -149,15 +149,46 @@ export default function PlayerDetailPage() {
                   Fighter Profile
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{player.name}</h1>
-                <p className="text-slate-500 mt-1">Active Competitor</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <p className="text-slate-500">Active Competitor</p>
+                  {player.total_matches > 5 && (
+                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-600 text-[10px] font-bold uppercase tracking-wider rounded border border-indigo-200">
+                      Veteran
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="flex items-center gap-6 w-full md:w-auto">
-              <div className="flex-1 md:flex-none bg-indigo-50 rounded-2xl p-4 border border-indigo-100 text-center min-w-[140px]">
-                <p className="text-3xl font-black text-indigo-600">{Math.round(player.elo)}</p>
-                <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider">ELO Rating</p>
-              </div>
+              {player.total_matches <= 5 ? (
+                <div className="flex-1 md:flex-none bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 text-center min-w-[140px] relative group/rating">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className="text-3xl font-black text-amber-700">{Math.round(player.elo)}</p>
+                    <span className="text-amber-600 text-xl font-bold">?</span>
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Provisional Rating</p>
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/rating:block z-20 w-40">
+                    <div className="bg-slate-900 text-white text-xs py-2 px-3 rounded-lg shadow-xl text-center">
+                      <div className="font-bold mb-1">Provisional Rating</div>
+                      <div className="text-[10px] text-slate-300">Play {6 - player.total_matches} more matches to establish</div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 md:flex-none bg-indigo-50 rounded-2xl p-4 border border-indigo-100 text-center min-w-[140px] relative group/rating">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className="text-3xl font-black text-indigo-600">{Math.round(player.elo)}</p>
+                    <span className="text-indigo-500 text-base">✓</span>
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider">ELO Rating</p>
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/rating:block z-20 w-32">
+                    <div className="bg-slate-900 text-white text-xs py-2 px-3 rounded-lg shadow-xl text-center font-bold">
+                      Established Rating
+                    </div>
+                  </div>
+                </div>
+              )}
               {isAdmin && (
                 <button
                   onClick={() => setShowDeleteModal(true)}

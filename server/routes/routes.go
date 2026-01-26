@@ -60,4 +60,11 @@ func SetupRoutes(app *fiber.App) {
 	leaderboard.Get("/top", handlers.GetTopPlayers)
 	leaderboard.Get("/rank/:id", handlers.GetPlayerRank)
 	leaderboard.Get("/predict", handlers.PredictMatch)
+
+	// Championship routes (public)
+	championship := api.Group("/championships")
+	championship.Get("/current", handlers.GetCurrentChampion)
+	championship.Get("/history", handlers.GetChampionshipHistory)
+	championship.Get("/stats", handlers.GetChampionStats)
+	championship.Get("/player/:id", handlers.GetPlayerChampionshipHistory)
 }

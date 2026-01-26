@@ -19,7 +19,7 @@ func main() {
 	config.ConnectDatabase()
 
 	// Auto migrate models
-	err := config.DB.AutoMigrate(&models.Player{}, &models.Match{}, &models.Admin{})
+	err := config.DB.AutoMigrate(&models.Player{}, &models.Match{}, &models.Admin{}, &models.ChampionshipReign{})
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}

@@ -170,3 +170,36 @@ export interface PlayerRankResponse {
   total_players: number;
   percentile: number;
 }
+
+// Championship types
+export interface ChampionshipReign {
+  id: number;
+  player_id: number;
+  player: Player;
+  started_at: string;
+  ended_at: string | null;
+  days: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChampionStats {
+  player_id: number;
+  player_name: string;
+  total_reigns: number;
+  total_days: number;
+  longest_reign_days: number;
+  current_champion: boolean;
+  first_crowned: string;
+  last_crowned?: string;
+}
+
+export interface ChampionshipHistoryResponse {
+  reigns: ChampionshipReign[];
+  total: number;
+}
+
+export interface ChampionStatsResponse {
+  champions: ChampionStats[];
+  total: number;
+}

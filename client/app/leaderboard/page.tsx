@@ -138,18 +138,41 @@ export default function LeaderboardPage() {
                                 <span className="block font-bold text-slate-700 group-hover:text-indigo-600 transition-colors text-base">
                                     {player.name}
                                 </span>
-                                {(index + 1) <= 3 && (
+                                {(index + 1) <= 3 ? (
                                     <span className="text-[10px] uppercase font-bold text-amber-500 tracking-wide">
                                         Top Tier
+                                    </span>
+                                ) : player.total_matches > 5 && (
+                                    <span className="text-[10px] uppercase font-bold text-indigo-500 tracking-wide">
+                                        Veteran
                                     </span>
                                 )}
                             </div>
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <div className="inline-block px-3 py-1 bg-slate-100 rounded-md">
-                             <span className="font-mono font-bold text-slate-900">{Math.round(player.elo)}</span>
-                          </div>
+                          {player.total_matches <= 5 ? (
+                            <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 rounded-md relative group/provisional">
+                              <span className="font-mono font-bold text-amber-700">{Math.round(player.elo)}</span>
+                              <span className="text-amber-600 text-xs font-bold">?</span>
+                              <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/provisional:block z-10 w-36">
+                                <div className="bg-slate-900 text-white text-xs py-2 px-3 rounded shadow-lg text-center">
+                                  <div className="font-bold mb-1">Provisional Rating</div>
+                                  <div className="text-[10px] text-slate-300">Play {6 - player.total_matches} more to establish</div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-md relative group/established">
+                              <span className="font-mono font-bold text-slate-900">{Math.round(player.elo)}</span>
+                              <span className="text-indigo-500 text-xs">✓</span>
+                              <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/established:block z-10 w-28">
+                                <div className="bg-slate-900 text-white text-xs py-1.5 px-3 rounded shadow-lg text-center font-semibold">
+                                  Established
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center hidden sm:table-cell">
                           <span className="text-slate-500 font-medium">{player.total_matches}</span>

@@ -50,6 +50,16 @@ export default function Navbar() {
                 Leaderboard
               </Link>
               <Link
+                href="/champions"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  pathname === '/champions'
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                Champions
+              </Link>
+              <Link
                 href="/players"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   pathname?.startsWith('/players')
